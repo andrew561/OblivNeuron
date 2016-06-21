@@ -54,3 +54,18 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
+void load_data(protocolIO *io, int **weights, int **inputs, int party) {
+    FILE *input_file = fopen(io->src, "r");
+
+    if (input_file == NULL) {
+        printf("File '%s' not found\n", io->src);
+        clean_errno();
+        exit(1);
+    }
+
+    io->n = 0;
+    int memsize = ALLOC;
+
+    double a;
+    while (!feof(inputFile)) {
+        int data_points = fscanf(input_file, "%lf", &a)
