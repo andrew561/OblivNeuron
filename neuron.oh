@@ -1,0 +1,19 @@
+
+/* coefficients in the Taylor series of the logistic function for terms
+   x^0, x^1, x^3, x^5, and x^7, in fixed-point form (all terms with even
+   exponents besides x^0 are zero and all coefficients for terms with
+   exponents greater than 7 are too small to fit into 32-bit fixed-point
+   numbers. */
+const int TAYLOR_COEFF[5] = {
+    0x00008000, // 1/2
+    0x00004000, // 1/4
+    0x80000555, // -1/48
+    0x00000088, // 1/480
+    0x8000000D  // -17/80640
+}
+
+void neuron(void *args);
+void convert_to_obliv(protocolIO *io, obliv int *ovalues, int *values, int party);
+void approx_logistic(protocolIO *io, obliv int *oweights, obliv int *oinputs);
+void check_input_count(protocolIO *io);
+

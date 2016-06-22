@@ -5,9 +5,11 @@
 
 #include <obliv.h>
 
+#include "dbg.h"
+
 int main(int argc, char *argv[]) {
     if (argc != 4) {
-        printf("usage: %s, <hostname:port> <1|2> <filename>\n", argv[0]);
+        log_info("usage: %s, <hostname:port> <1|2> <filename>\n", argv[0]);
         exit(0);
     }
 
@@ -17,15 +19,15 @@ int main(int argc, char *argv[]) {
     ProtocolDesc pd;
     protocolIO io;
 
-    printf("Connecting to %s on port %s...\n", remote_host, port);
+    log_info("Connecting to %s on port %s...\n", remote_host, port);
     if (argv[2][0] == '1') {
         if (protocolAcceptTcp2P(&pd, port) != 0) {
-            printf("TCP accept from %s failed\n", remote_host);
+            log_info("TCP accept from %s failed\n", remote_host);
             exit(1);
         }
     } else {
         if (protocolConnectTcp2P(&pd, remote_host, port) != 0) {
-            printf("TCP connect to %s failed\n", remote_host);
+            log_info("TCP connect to %s failed\n", remote_host);
             exit(1);
         }
     }
@@ -42,30 +44,71 @@ int main(int argc, char *argv[]) {
     cleanupProtocol(&pd);
     double runtime = wallClock() - lap;
 
-    printf("%s total time: %lf seconds\n",
+    log_info("%s total time: %lf seconds\n",
            current_party == 1 ? "Generator" : "Evaluator", runtime);
 
     int num_gates = yaoGateCount();
-    printf("Yao gate count: %u\n", num_gates);
+    log_info("Yao gate count: %u\n", num_gates);
 
-    printf("\n");
-    printf("1/(1 + e^-<x, y>) = %15.6e\n", (double) DESCALE(io.output);
+    log_info("\n");
+    log_info("1/(1 + e^-<x, y>) = %15.6e\n", (double) DESCALE(io.output);
     
     return 0;
 }
 
 void load_data(protocolIO *io, int **weights, int **inputs, int party) {
     FILE *input_file = fopen(io->src, "r");
-
     if (input_file == NULL) {
-        printf("File '%s' not found\n", io->src);
+        log_info("File '%s' not found\n", io->src);
         clean_errno();
         exit(1);
     }
 
-    io->n = 0;
-    int memsize = ALLOC;
+    // the first line of the input file should contain the number of weights/inputs
+    fscanf(input_file, "%d", &(io->n));
+
+    // allocate space in memory for weights or inputs, depending on the party
+    if (party == 1) {
+        *weights = malloc(io->n * sizeof(int));
+    } else if (party == 2) {
+        *inputs = malloc(io->n * sizeof(int));
+    }
+
+    if ((party == 1 && weights == NULL) || (party == 2 && inputs == NULL)) {
+        log_err("Memory allocation failed for party %d", party);
+        clean_errno();
+        exit(1);
+    }
 
     double a;
+    int n = 0; // index of value being scanned
     while (!feof(inputFile)) {
-        int data_points = fscanf(input_file, "%lf", &a)
+        int scan_result = fscanf(input_file, "%lf", &a);
+
+        if (scan_result != 1) {
+            if (scan_result < 0 && feof(input_file)) {
+                break;
+            } else {
+                log_err("Input from '%s' does not match file format.  Check input file.\n\t"
+                        "File format exception found at line %d or %d in file.\n", io->src,
+                        io->n + 1, io->n + 2);
+                clean_errno();
+                exit(1);
+            }
+        }
+
+        // convert the float input to a fixed-point representation
+        int aint = a * SCALE;
+        assert(APPROX((double) DESCALE(aint), a));
+
+        if (party == 1) {
+            (*weights)[n] = aint;
+        } else if (party == 2) {
+            (*inputs)[n] = aint;
+        }
+    }
+
+    log_info("Loading %d data points...\n", io->n);
+    fclose(input_file);
+}
+

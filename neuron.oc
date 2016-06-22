@@ -1,0 +1,66 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <obliv.oh>
+
+#include "neuron.h"
+#include "neuron.oh"
+#include "dbg.h"
+
+void neuron(void *args) {
+    protocolIO *io = (protocolIO*) args;
+    int party = ocCurrentParty();
+
+    int *weights = NULL, *inputs = NULL; 
+    load_data(io, &weights, &inputs, party); 
+    check_input_count(io);
+
+    // output value of the neuron
+    obliv int output = 0;
+    obliv int *oweights = NULL, *inputs = NULL;
+    if (party == 1) { 
+        *oweights = malloc(sizeof(obliv int) * io->n);
+    } else if (party == 2) {
+        *oinputs = malloc(sizeof(obliv int) * io->n);
+    }
+    
+    if ((party == 1 && oweights == NULL) || (party == 2 && oinputs == NULL)) {
+        log_err("Memory allocation failed for party %d", party);
+        clean_errno();
+        exit(1);
+    }
+
+    convert_to_obliv(io, oweights, weights, 1);
+    convert_to_obliv(io, oinputs, inputs, 2);
+    free(weights);
+    free(inputs);
+
+    approx_logistic(io, oweights, oinputs);
+    free(oweights);
+    free(oinputs);
+}
+     
+void convert_to_obliv(protocolIO *io, obliv int *ovalues, int *values, int party) {
+    int i;
+    for(i = 0; i < io->n; i++) {
+        ovalues[i] = feedOblivInt(values[i], party);
+    }
+}
+
+void approx_logistic(protocolIO *io, obliv int *oweights, obliv int *oinputs) {
+    // TODO: Implement Taylor series calculation
+}
+     
+void check_input_count(protocolIO *io) {
+    int num_weights = ocBroadcastInt(io->n, 1);
+    int num_inputs = ocBroadcastInt(io->n, 2);
+    if (nx != ny) {
+        log_err("Unequal number of data points.\n\t"
+        "Number of weights (party 1): %d\n\t"
+        "Number of inputs (party 2): %d\n", num_weights, num_inputs);
+        clean_errno();
+        exit(1);
+    }
+}
+
