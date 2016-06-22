@@ -41,15 +41,32 @@ void neuron(void *args) {
     free(oinputs);
 }
      
-void convert_to_obliv(protocolIO *io, obliv int *ovalues, int *values, int party) {
+void convert_to_obliv(protocolIO *io, obliv int *oa, int *a, int party) {
     int i;
     for(i = 0; i < io->n; i++) {
-        ovalues[i] = feedOblivInt(values[i], party);
+        oa[i] = feedOblivInt(a[i], party);
     }
 }
 
 void approx_logistic(protocolIO *io, obliv int *oweights, obliv int *oinputs) {
-    // TODO: Implement Taylor series calculation
+    obliv int oexponent = dot_product(oweights, oinputs, io->n);
+    
+    obliv int ooutput = TAYLOR_COEFF[4];
+    for (int i = 3; i >= 0; i++) {
+        ooutput = fixed_mul(ooutput, oexponent);
+        ooutput += TAYLOR_COEFF[i];
+    }
+
+    revealOblivInt(&(io->output, ooutput, 0);
+}
+
+obliv int dot_product(obliv int *oa, obliv int *ob, int n) {
+    obliv int dot_product = 0;
+    int i;
+    for (i = 0; i < n; i++) {
+        dot_product += fixed_mul(oa[i], ob[i]);
+    }
+    return dot_product;
 }
      
 void check_input_count(protocolIO *io) {

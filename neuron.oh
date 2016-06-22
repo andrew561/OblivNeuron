@@ -13,7 +13,9 @@ const int TAYLOR_COEFF[5] = {
 }
 
 void neuron(void *args);
-void convert_to_obliv(protocolIO *io, obliv int *ovalues, int *values, int party);
+void convert_to_obliv(protocolIO *io, obliv int *oa, int *a, int party);
 void approx_logistic(protocolIO *io, obliv int *oweights, obliv int *oinputs);
+obliv int dot_product(obliv int *oa, obliv int *ob, int n);
+obliv int fixed_mul(obliv int oa, obliv int ob);
 void check_input_count(protocolIO *io);
 
