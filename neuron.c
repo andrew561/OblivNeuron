@@ -39,13 +39,8 @@ int main(int argc, char *argv[]) {
     io.src = argv[3];
 
     // execute the protocol, computing the run time using the wall clock
-    lap = wallClock();
     execYaoProtocol(&pd, neuron, &io);
     cleanupProtocol(&pd);
-    double runtime = wallClock() - lap;
-
-    log_info("%s total time: %lf seconds\n",
-           current_party == 1 ? "Generator" : "Evaluator", runtime);
 
     int num_gates = yaoGateCount();
     log_info("Yao gate count: %u\n", num_gates);

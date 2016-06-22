@@ -9,10 +9,5 @@ typedef struct {
     int output;
 } protocolIO;
 
-// for timing execution of protocol
-extern double lap;
-double wallClock();
-const char *mySide();
-
 void load_data(protocolIO *io, int **weights, int **inputs, int party);
 
