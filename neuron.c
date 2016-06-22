@@ -5,6 +5,7 @@
 
 #include <obliv.h>
 
+#include "neuron.h"
 #include "dbg.h"
 
 int main(int argc, char *argv[]) {
@@ -32,8 +33,8 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    current_party = (argv[2][0] == '1' ? 1 : 2);
-    setCurrent(&pd, current_party);
+    int current_party = (argv[2][0] == '1' ? 1 : 2);
+    setCurrentParty(&pd, current_party);
 
     // argv[3] is the filename of the data file
     io.src = argv[3];
@@ -44,9 +45,7 @@ int main(int argc, char *argv[]) {
 
     int num_gates = yaoGateCount();
     log_info("Yao gate count: %u\n", num_gates);
-
-    log_info("\n");
-    log_info("1/(1 + e^-<x, y>) = %15.6e\n", (double) DESCALE(io.output);
+    log_info("1/(1 + e^-<x, y>) = %15.6e\n", (double) DESCALE(io.output));
     
     return 0;
 }
@@ -77,7 +76,7 @@ void load_data(protocolIO *io, int **weights, int **inputs, int party) {
 
     double a;
     int n = 0; // index of value being scanned
-    while (!feof(inputFile)) {
+    while (!feof(input_file)) {
         int scan_result = fscanf(input_file, "%lf", &a);
 
         if (scan_result != 1) {
@@ -94,7 +93,6 @@ void load_data(protocolIO *io, int **weights, int **inputs, int party) {
 
         // convert the float input to a fixed-point representation
         int aint = a * SCALE;
-        assert(APPROX((double) DESCALE(aint), a));
 
         if (party == 1) {
             (*weights)[n] = aint;

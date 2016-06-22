@@ -10,7 +10,7 @@ const int TAYLOR_COEFF[5] = {
     0x80000555, // -1/48
     0x00000088, // 1/480
     0x8000000D  // -17/80640
-}
+};
 
 void neuron(void *args);
 void convert_to_obliv(protocolIO *io, obliv int *oa, int *a, int party);

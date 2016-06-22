@@ -18,18 +18,14 @@ void neuron(void *args) {
 
     // output value of the neuron
     obliv int output = 0;
-    obliv int *oweights = NULL, *inputs = NULL;
+    obliv int *oweights = NULL, *oinputs = NULL;
     if (party == 1) { 
-        *oweights = malloc(sizeof(obliv int) * io->n);
+        oweights = malloc(sizeof(obliv int) * io->n);
     } else if (party == 2) {
-        *oinputs = malloc(sizeof(obliv int) * io->n);
+        oinputs = malloc(sizeof(obliv int) * io->n);
     }
-    
-    if ((party == 1 && oweights == NULL) || (party == 2 && oinputs == NULL)) {
-        log_err("Memory allocation failed for party %d", party);
-        clean_errno();
-        exit(1);
-    }
+    // can't check if malloc succeeded here because that would be
+    // conditioned on an oblivious variable
 
     convert_to_obliv(io, oweights, weights, 1);
     convert_to_obliv(io, oinputs, inputs, 2);
@@ -57,7 +53,7 @@ void approx_logistic(protocolIO *io, obliv int *oweights, obliv int *oinputs) {
         ooutput += TAYLOR_COEFF[i];
     }
 
-    revealOblivInt(&(io->output, ooutput, 0);
+    revealOblivInt(&(io->output), ooutput, 0);
 }
 
 obliv int dot_product(obliv int *oa, obliv int *ob, int n) {
@@ -68,11 +64,19 @@ obliv int dot_product(obliv int *oa, obliv int *ob, int n) {
     }
     return dot_product;
 }
+
+obliv int fixed_mul(obliv int oa, obliv int ob) {
+    obliv int res = 0;
+    obliv long long int lloa = (obliv long long int) oa;
+    obliv long long int llob = (obliv long long int) ob;
+    res = DESCALE((lloa*llob));
+    return res;
+}
      
 void check_input_count(protocolIO *io) {
     int num_weights = ocBroadcastInt(io->n, 1);
     int num_inputs = ocBroadcastInt(io->n, 2);
-    if (nx != ny) {
+    if (num_weights != num_inputs) {
         log_err("Unequal number of data points.\n\t"
         "Number of weights (party 1): %d\n\t"
         "Number of inputs (party 2): %d\n", num_weights, num_inputs);

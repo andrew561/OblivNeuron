@@ -9,5 +9,6 @@ typedef struct {
     int output;
 } protocolIO;
 
+void neuron(void *args);
 void load_data(protocolIO *io, int **weights, int **inputs, int party);
 
