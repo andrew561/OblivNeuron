@@ -45,8 +45,8 @@ int main(int argc, char *argv[]) {
 
     int num_gates = yaoGateCount();
     log_info("Yao gate count: %u\n", num_gates);
-    log_info("1/(1 + e^-<x, y>) = %15.6e\n", (double) DESCALE(io.output));
-    
+    log_info("1/(1 + e^<weights, inputs>) = %15.6e\n", (double) DESCALE(io.output));
+
     return 0;
 }
 
@@ -62,11 +62,8 @@ void load_data(protocolIO *io, int **weights, int **inputs, int party) {
     fscanf(input_file, "%d", &(io->n));
 
     // allocate space in memory for weights or inputs, depending on the party
-    if (party == 1) {
-        *weights = malloc(io->n * sizeof(int));
-    } else if (party == 2) {
-        *inputs = malloc(io->n * sizeof(int));
-    }
+    *weights = malloc(io->n * sizeof(int));
+    *inputs = malloc(io->n * sizeof(int));
 
     if ((party == 1 && weights == NULL) || (party == 2 && inputs == NULL)) {
         log_err("Memory allocation failed for party %d", party);
@@ -99,6 +96,8 @@ void load_data(protocolIO *io, int **weights, int **inputs, int party) {
         } else if (party == 2) {
             (*inputs)[n] = aint;
         }
+
+        n += 1;
     }
 
     log_info("Loading %d data points...\n", io->n);

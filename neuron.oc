@@ -19,11 +19,8 @@ void neuron(void *args) {
     // output value of the neuron
     obliv int output = 0;
     obliv int *oweights = NULL, *oinputs = NULL;
-    if (party == 1) { 
-        oweights = malloc(sizeof(obliv int) * io->n);
-    } else if (party == 2) {
-        oinputs = malloc(sizeof(obliv int) * io->n);
-    }
+    oweights = malloc(sizeof(obliv int) * io->n);
+    oinputs = malloc(sizeof(obliv int) * io->n);
     // can't check if malloc succeeded here because that would be
     // conditioned on an oblivious variable
 
@@ -46,11 +43,16 @@ void convert_to_obliv(protocolIO *io, obliv int *oa, int *a, int party) {
 
 void approx_logistic(protocolIO *io, obliv int *oweights, obliv int *oinputs) {
     obliv int oexponent = dot_product(oweights, oinputs, io->n);
-    
-    obliv int ooutput = TAYLOR_COEFF[4];
-    for (int i = 3; i >= 0; i++) {
-        ooutput = fixed_mul(ooutput, oexponent);
-        ooutput += TAYLOR_COEFF[i];
+
+    obliv int ooutput = TAYLOR_COEFF[0];
+    obliv int term = 0;
+    int i, j;
+    for (i = 1; i < 4; i++) {
+        term = TAYLOR_COEFF[i];
+        for (j = 0; j < (2 * i) - 1; j++) {
+            term = fixed_mul(term, oexponent);
+        }
+        ooutput += term;
     }
 
     revealOblivInt(&(io->output), ooutput, 0);
@@ -70,6 +72,7 @@ obliv int fixed_mul(obliv int oa, obliv int ob) {
     obliv long long int lloa = (obliv long long int) oa;
     obliv long long int llob = (obliv long long int) ob;
     res = DESCALE((lloa*llob));
+    
     return res;
 }
      

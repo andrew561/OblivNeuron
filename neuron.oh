@@ -4,12 +4,11 @@
    exponents besides x^0 are zero and all coefficients for terms with
    exponents greater than 7 are too small to fit into 32-bit fixed-point
    numbers. */
-const int TAYLOR_COEFF[5] = {
+const int TAYLOR_COEFF[4] = {
     0x00008000, // 1/2
     0x00004000, // 1/4
-    0x80000555, // -1/48
+    0xfffffaab, // -1/48
     0x00000088, // 1/480
-    0x8000000D  // -17/80640
 };
 
 void neuron(void *args);
