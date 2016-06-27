@@ -11,4 +11,5 @@ typedef struct {
 
 void neuron(void *args);
 void load_data(protocolIO *io, int **weights, int **inputs, int party);
+double wall_clock(void);
 

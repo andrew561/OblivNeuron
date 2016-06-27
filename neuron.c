@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include <obliv.h>
 
@@ -40,11 +41,14 @@ int main(int argc, char *argv[]) {
     io.src = argv[3];
 
     // execute the protocol, computing the run time using the wall clock
+    double start_time = wall_clock();
     execYaoProtocol(&pd, neuron, &io);
     cleanupProtocol(&pd);
+    double time_elapsed = wall_clock() - start_time;
 
     int num_gates = yaoGateCount();
-    log_info("Yao gate count: %u\n", num_gates);
+    log_info("Yao gate count: %u gates\n", num_gates);
+    log_info("Time elapsed: %6.4lf seconds\n", time_elapsed);
     log_info("1/(1 + e^<weights, inputs>) = %15.6e\n", (double) DESCALE(io.output));
 
     return 0;
@@ -103,4 +107,11 @@ void load_data(protocolIO *io, int **weights, int **inputs, int party) {
     log_info("Loading %d data points...\n", io->n);
     fclose(input_file);
 }
+
+double wall_clock(void) {
+    struct timespec t;
+    clock_gettime(CLOCK_REALTIME, &t);
+    return t.tv_sec + (1e-9 * t.tv_nsec);
+}
+
 

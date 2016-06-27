@@ -1,1 +1,4 @@
 *.swp
+*.cil.*
+*.i
+a.out
