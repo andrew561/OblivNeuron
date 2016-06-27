@@ -10,6 +10,7 @@ const int TAYLOR_COEFF[4] = {
     0xfffffaab, // -1/48
     0x00000088, // 1/480
 };
+const int APPROX_BOUND = 0x00027d29;
 
 void neuron(void *args);
 void convert_to_obliv(protocolIO *io, obliv int *oa, int *a, int party);

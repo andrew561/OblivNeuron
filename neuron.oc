@@ -54,6 +54,9 @@ void approx_logistic(protocolIO *io, obliv int *oweights, obliv int *oinputs) {
         }
         ooutput += term;
     }
+    
+    obliv if (oexponent > APPROX_BOUND) ooutput = 1;
+    obliv if (oexponent < -APPROX_BOUND) ooutput = 0;
 
     revealOblivInt(&(io->output), ooutput, 0);
 }
