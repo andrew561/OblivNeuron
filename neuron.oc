@@ -16,8 +16,7 @@ void neuron(void *args) {
     load_data(io, &weights, &inputs, party); 
     check_input_count(io);
 
-    // output value of the neuron
-    obliv int output = 0;
+    obliv int output = 0; // output value of neuron
     obliv int *oweights = NULL, *oinputs = NULL;
     oweights = malloc(sizeof(obliv int) * io->n);
     oinputs = malloc(sizeof(obliv int) * io->n);
@@ -45,6 +44,7 @@ void approx_logistic(protocolIO *io, obliv int *oweights, obliv int *oinputs) {
     obliv int oexponent = dot_product(oweights, oinputs, io->n);
     obliv int oexp_squared = fixed_mul(oexponent, oexponent);
 
+    // Taylor polynomial evaluation uses Horner's method to improve performance
     obliv int ooutput = TAYLOR_COEFF[3];
     int i;
     for (i = 2; i > 0; i--) {
@@ -54,6 +54,8 @@ void approx_logistic(protocolIO *io, obliv int *oweights, obliv int *oinputs) {
     ooutput = fixed_mul(ooutput, oexponent);
     ooutput += TAYLOR_COEFF[0];
 
+    // for values of x outside of the interval (-APPROX_BOUND, APPROX_BOUND),
+    // the lines y = 0 and y = 1 are closer to the actual logistic function
     obliv if (oexponent > APPROX_BOUND) ooutput = 1;
     obliv if (oexponent < -APPROX_BOUND) ooutput = 0;
 
@@ -73,8 +75,7 @@ obliv int fixed_mul(obliv int oa, obliv int ob) {
     obliv int res = 0;
     obliv long long int lloa = (obliv long long int) oa;
     obliv long long int llob = (obliv long long int) ob;
-    res = DESCALE((lloa*llob));
-    
+    res = DESCALE((lloa*llob)); 
     return res;
 }
      

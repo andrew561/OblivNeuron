@@ -63,7 +63,12 @@ void load_data(protocolIO *io, int **weights, int **inputs, int party) {
     }
 
     // the first line of the input file should contain the number of weights/inputs
-    fscanf(input_file, "%d", &(io->n));
+    if (fscanf(input_file, "%d", &(io->n)) <= 0) {
+        log_err("First line of file does match file format.  Should contain integer"
+                "corresponding to the number of weights/inputs.");
+        clean_errno();
+        exit(1);
+    }
 
     // allocate space in memory for weights or inputs, depending on the party
     *weights = malloc(io->n * sizeof(int));
@@ -110,6 +115,7 @@ void load_data(protocolIO *io, int **weights, int **inputs, int party) {
 
 double wall_clock(void) {
     struct timespec t;
+    // clock_gettime is supported by all platforms
     clock_gettime(CLOCK_REALTIME, &t);
     return t.tv_sec + (1e-9 * t.tv_nsec);
 }
