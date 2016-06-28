@@ -43,18 +43,17 @@ void convert_to_obliv(protocolIO *io, obliv int *oa, int *a, int party) {
 
 void approx_logistic(protocolIO *io, obliv int *oweights, obliv int *oinputs) {
     obliv int oexponent = dot_product(oweights, oinputs, io->n);
+    obliv int oexp_squared = fixed_mul(oexponent, oexponent);
 
-    obliv int ooutput = TAYLOR_COEFF[0];
-    obliv int term = 0;
-    int i, j;
-    for (i = 1; i < 4; i++) {
-        term = TAYLOR_COEFF[i];
-        for (j = 0; j < (2 * i) - 1; j++) {
-            term = fixed_mul(term, oexponent);
-        }
-        ooutput += term;
+    obliv int ooutput = TAYLOR_COEFF[3];
+    int i;
+    for (i = 2; i > 0; i--) {
+        ooutput = fixed_mul(ooutput, oexp_squared);
+        ooutput += TAYLOR_COEFF[i];
     }
-    
+    ooutput = fixed_mul(ooutput, oexponent);
+    ooutput += TAYLOR_COEFF[0];
+
     obliv if (oexponent > APPROX_BOUND) ooutput = 1;
     obliv if (oexponent < -APPROX_BOUND) ooutput = 0;
 
