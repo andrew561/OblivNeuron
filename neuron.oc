@@ -45,9 +45,9 @@ void approx_logistic(protocolIO *io, obliv int *oweights, obliv int *oinputs) {
     obliv int oexp_squared = fixed_mul(oexponent, oexponent);
 
     // Taylor polynomial evaluation uses Horner's method to improve performance
-    obliv int ooutput = TAYLOR_COEFF[3];
+    obliv int ooutput = TAYLOR_COEFF[NUM_TERMS - 1];
     int i;
-    for (i = 2; i > 0; i--) {
+    for (i = NUM_TERMS - 2; i > 0; i--) {
         ooutput = fixed_mul(ooutput, oexp_squared);
         ooutput += TAYLOR_COEFF[i];
     }
