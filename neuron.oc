@@ -51,14 +51,12 @@ void approx_logistic(protocolIO *io, obliv int *oweights, obliv int *oinputs) {
     for (i = NUM_TERMS - 2; i >= 0; i--) {
         ooutput = fixed_mul(ooutput, oexponent);
         ooutput += TAYLOR_COEFF[i];
-    }
-
+    } 
     ooutput = fixed_div(ONE, ONE + ooutput);
 
     // for values of x outside of the interval (-APPROX_BOUND, APPROX_BOUND),
     // the lines y = 0 and y = 1 are closer to the actual logistic function
-    obliv if (oexponent < -APPROX_BOUND) ooutput = 1;
-    obliv if (oexponent > APPROX_BOUND) ooutput = 0;
+    obliv if (-oexponent > APPROX_BOUND) ooutput = 1;
 
     revealOblivInt(&(io->output), ooutput, 0);
 }

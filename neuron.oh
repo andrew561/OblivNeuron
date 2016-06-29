@@ -1,11 +1,12 @@
 
 // number of terms in Taylor polynomial
-#define NUM_TERMS 7
+#define NUM_TERMS 8
 /* coefficients in the Taylor series of the logistic function for terms
    x^0 through x^7, in fixed-point form (coefficients for terms greater
    than x^7 are insignificant or will not fit into 32-bit fixed-point
    integers. */
 const int TAYLOR_COEFF[NUM_TERMS] = {
+    0x00010000, // 1
     0x00010000, // 1
     0x00008000, // 1/2
     0x0000295F, // 1/6
@@ -18,7 +19,7 @@ const int TAYLOR_COEFF[NUM_TERMS] = {
 /* APPROX_BOUND is the x value of the intersection of the Taylor polynomial
    specified above and the line y = 1 (-APPROX_BOUND is the intersection with
    y = 0) */
-const int APPROX_BOUND = 0x00027d29;
+const int APPROX_BOUND = 0x0002C24D;
 
 void neuron(void *args);
 void convert_to_obliv(protocolIO *io, obliv int *oa, int *a, int party);
