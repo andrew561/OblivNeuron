@@ -1,16 +1,18 @@
 
 // number of terms in Taylor polynomial
-#define NUM_TERMS 4
+#define NUM_TERMS 7
 /* coefficients in the Taylor series of the logistic function for terms
-   x^0, x^1, x^3, and x^5, in fixed-point form (all terms with even
-   exponents besides x^0 are zero and all coefficients for terms with
-   exponents greater than 5 are too small to fit into 32-bit fixed-point
-   numbers. */
+   x^0 through x^7, in fixed-point form (coefficients for terms greater
+   than x^7 are insignificant or will not fit into 32-bit fixed-point
+   integers. */
 const int TAYLOR_COEFF[NUM_TERMS] = {
+    0x00010000, // 1
     0x00008000, // 1/2
-    0x00004000, // 1/4
-    0xfffffaab, // -1/48
-    0x00000088, // 1/480
+    0x0000295F, // 1/6
+    0x00000AAA, // 1/24
+    0x00000222, // 1/120
+    0x0000005B, // 1/720
+    0x0000000D  // 1/5040
 };
 
 /* APPROX_BOUND is the x value of the intersection of the Taylor polynomial
@@ -23,5 +25,6 @@ void convert_to_obliv(protocolIO *io, obliv int *oa, int *a, int party);
 void approx_logistic(protocolIO *io, obliv int *oweights, obliv int *oinputs);
 obliv int dot_product(obliv int *oa, obliv int *ob, int n);
 obliv int fixed_mul(obliv int oa, obliv int ob);
+obliv int fixed_div(obliv int oa, obliv int ob);
 void check_input_count(protocolIO *io);
 

@@ -8,6 +8,8 @@
 #include "neuron.oh"
 #include "dbg.h"
 
+const int ONE = 0x00010000; // the literal 1, in 32-bit fixed-point format
+
 void neuron(void *args) {
     protocolIO *io = (protocolIO*) args;
     int party = ocCurrentParty();
@@ -41,23 +43,22 @@ void convert_to_obliv(protocolIO *io, obliv int *oa, int *a, int party) {
 }
 
 void approx_logistic(protocolIO *io, obliv int *oweights, obliv int *oinputs) {
-    obliv int oexponent = dot_product(oweights, oinputs, io->n);
-    obliv int oexp_squared = fixed_mul(oexponent, oexponent);
+    obliv int oexponent = -(dot_product(oweights, oinputs, io->n));
 
     // Taylor polynomial evaluation uses Horner's method to improve performance
     obliv int ooutput = TAYLOR_COEFF[NUM_TERMS - 1];
     int i;
-    for (i = NUM_TERMS - 2; i > 0; i--) {
-        ooutput = fixed_mul(ooutput, oexp_squared);
+    for (i = NUM_TERMS - 2; i >= 0; i--) {
+        ooutput = fixed_mul(ooutput, oexponent);
         ooutput += TAYLOR_COEFF[i];
     }
-    ooutput = fixed_mul(ooutput, oexponent);
-    ooutput += TAYLOR_COEFF[0];
+
+    ooutput = fixed_div(ONE, ONE + ooutput);
 
     // for values of x outside of the interval (-APPROX_BOUND, APPROX_BOUND),
     // the lines y = 0 and y = 1 are closer to the actual logistic function
-    obliv if (oexponent > APPROX_BOUND) ooutput = 1;
-    obliv if (oexponent < -APPROX_BOUND) ooutput = 0;
+    obliv if (oexponent < -APPROX_BOUND) ooutput = 1;
+    obliv if (oexponent > APPROX_BOUND) ooutput = 0;
 
     revealOblivInt(&(io->output), ooutput, 0);
 }
@@ -78,7 +79,15 @@ obliv int fixed_mul(obliv int oa, obliv int ob) {
     res = DESCALE((lloa*llob)); 
     return res;
 }
-     
+
+obliv int fixed_div(obliv int oa, obliv int ob) {
+    obliv int res = 0;
+    obliv long long int lloa = (obliv long long int) oa;
+    obliv long long int llob = (obliv long long int) ob;
+    res = (lloa * SCALE / llob);
+    return res;
+}
+
 void check_input_count(protocolIO *io) {
     int num_weights = ocBroadcastInt(io->n, 1);
     int num_inputs = ocBroadcastInt(io->n, 2);
