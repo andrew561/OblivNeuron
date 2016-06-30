@@ -42,22 +42,42 @@ void convert_to_obliv(protocolIO *io, obliv int *oa, int *a, int party) {
 
 void approx_logistic(protocolIO *io, obliv int *oweights, obliv int *oinputs) {
     obliv int oexponent = dot_product(oweights, oinputs, io->n);
-    obliv int oexp_squared = fixed_mul(oexponent, oexponent);
 
-    // Taylor polynomial evaluation uses Horner's method to improve performance
-    obliv int ooutput = TAYLOR_COEFF[NUM_TERMS - 1];
-    int i;
-    for (i = NUM_TERMS - 2; i > 0; i--) {
-        ooutput = fixed_mul(ooutput, oexp_squared);
-        ooutput += TAYLOR_COEFF[i];
-    }
-    ooutput = fixed_mul(ooutput, oexponent);
-    ooutput += TAYLOR_COEFF[0];
-
-    // for values of x outside of the interval (-APPROX_BOUND, APPROX_BOUND),
-    // the lines y = 0 and y = 1 are closer to the actual logistic function
-    obliv if (oexponent > APPROX_BOUND) ooutput = 1;
-    obliv if (oexponent < -APPROX_BOUND) ooutput = 0;
+    obliv int ooutput;
+    obliv if (oexponent < 0xfffc0001) output = 0;
+    obliv if (oexponent >= 0xfffc0001 && oexponent < 0xfffc8001)
+        ooutput = 0x000005cc * oexponent + 0x00001bcc;
+    obliv if (oexponent >= 0xfffc8001 && oexponent < 0xfffd0001)
+        ooutput = 0x00000946 * oexponent + 0x000027f6;
+    obliv if (oexponent >= 0xfffd0001 && oexponent < 0xfffd8001)
+        ooutput = 0x00000e8e * oexponent + 0x000037d0;
+    obliv if (oexponent >= 0xfffd8001 && oexponent < 0xfffe0001)
+        ooutput = 0x00001631 * oexponent + 0x00004ae6;
+    obliv if (oexponent >= 0xfffe0001 && oexponent < 0xfffe8001)
+        ooutput = 0x0000205e * oexponent + 0x00005f41;
+    obliv if (oexponent >= 0xfffe8001 && oexponent < 0xffff0001)
+        ooutput = 0x00002c4b * oexponent + 0x00007125;
+    obliv if (oexponent >= 0xffff0001 && oexponent < 0xffff8001)
+        ooutput = 0x0000379a * oexponent + 0x00007c73;
+    obliv if (oexponent >= 0xffff8001 && oexponent < 0x00000000)
+        ooutput = 0x00003eb2 * oexponent + 0x00008000;
+    obliv if (oexponent >= 0x00000000 && oexponent < 0x00008000)
+        ooutput = 0x00003eb2 * oexponent + 0x00008000;
+    obliv if (oexponent >= 0x00008000 && oexponent < 0x00010000)
+        ooutput = 0x0000379a * oexponent + 0x0000838c;
+    obliv if (oexponent >= 0x00010000 && oexponent < 0x00018000)
+        ooutput = 0x00002c4b * oexponent + 0x00008eda;
+    obliv if (oexponent >= 0x00018000 && oexponent < 0x00020000)
+        ooutput = 0x0000205e * oexponent + 0x0000a0be;
+    obliv if (oexponent >= 0x00020000 && oexponent < 0x00028000)
+        ooutput = 0x00001631 * oexponent + 0x0000b519;
+    obliv if (oexponent >= 0x00028000 && oexponent < 0x00030000)
+        ooutput = 0x00000e8e * oexponent + 0x0000c82f;
+    obliv if (oexponent >= 0x00030000 && oexponent < 0x00038000)
+        ooutput = 0x00000946 * oexponent + 0x0000d809;
+    obliv if (oexponent >= 0x00038000 && oexponent < 0x00040000)
+        ooutput = 0x000005cc * oexponent + 0x0000e433;
+    obliv if (oexponent >= 0x00040000) output = 1;
 
     revealOblivInt(&(io->output), ooutput, 0);
 }
