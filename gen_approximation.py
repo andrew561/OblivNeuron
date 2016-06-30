@@ -56,5 +56,5 @@ for line in lines:
     new_lines.append(tuple(map(convert_to_fixed_point_hex, line)))
 
 for line in new_lines:
-    print("obliv if (oexponent >= {} && oexponent < {})\n    ooutput = {} * oexponent + {};".format(line[0], line[1], line[2], line[3]))
+    print("obliv if (oexponent >= {}) {{\n    obliv if (oexponent < {}) {{\n        ooutput = {} * oexponent + {};\n    }}\n}}".format(line[0], line[1], line[2], line[3]))
 

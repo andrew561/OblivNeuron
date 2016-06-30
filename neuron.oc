@@ -44,40 +44,86 @@ void approx_logistic(protocolIO *io, obliv int *oweights, obliv int *oinputs) {
     obliv int oexponent = dot_product(oweights, oinputs, io->n);
 
     obliv int ooutput;
-    obliv if (oexponent < 0xfffc0001) output = 0;
-    obliv if (oexponent >= 0xfffc0001 && oexponent < 0xfffc8001)
-        ooutput = 0x000005cc * oexponent + 0x00001bcc;
-    obliv if (oexponent >= 0xfffc8001 && oexponent < 0xfffd0001)
-        ooutput = 0x00000946 * oexponent + 0x000027f6;
-    obliv if (oexponent >= 0xfffd0001 && oexponent < 0xfffd8001)
-        ooutput = 0x00000e8e * oexponent + 0x000037d0;
-    obliv if (oexponent >= 0xfffd8001 && oexponent < 0xfffe0001)
-        ooutput = 0x00001631 * oexponent + 0x00004ae6;
-    obliv if (oexponent >= 0xfffe0001 && oexponent < 0xfffe8001)
-        ooutput = 0x0000205e * oexponent + 0x00005f41;
-    obliv if (oexponent >= 0xfffe8001 && oexponent < 0xffff0001)
-        ooutput = 0x00002c4b * oexponent + 0x00007125;
-    obliv if (oexponent >= 0xffff0001 && oexponent < 0xffff8001)
-        ooutput = 0x0000379a * oexponent + 0x00007c73;
-    obliv if (oexponent >= 0xffff8001 && oexponent < 0x00000000)
-        ooutput = 0x00003eb2 * oexponent + 0x00008000;
-    obliv if (oexponent >= 0x00000000 && oexponent < 0x00008000)
-        ooutput = 0x00003eb2 * oexponent + 0x00008000;
-    obliv if (oexponent >= 0x00008000 && oexponent < 0x00010000)
-        ooutput = 0x0000379a * oexponent + 0x0000838c;
-    obliv if (oexponent >= 0x00010000 && oexponent < 0x00018000)
-        ooutput = 0x00002c4b * oexponent + 0x00008eda;
-    obliv if (oexponent >= 0x00018000 && oexponent < 0x00020000)
-        ooutput = 0x0000205e * oexponent + 0x0000a0be;
-    obliv if (oexponent >= 0x00020000 && oexponent < 0x00028000)
-        ooutput = 0x00001631 * oexponent + 0x0000b519;
-    obliv if (oexponent >= 0x00028000 && oexponent < 0x00030000)
-        ooutput = 0x00000e8e * oexponent + 0x0000c82f;
-    obliv if (oexponent >= 0x00030000 && oexponent < 0x00038000)
-        ooutput = 0x00000946 * oexponent + 0x0000d809;
-    obliv if (oexponent >= 0x00038000 && oexponent < 0x00040000)
-        ooutput = 0x000005cc * oexponent + 0x0000e433;
-    obliv if (oexponent >= 0x00040000) output = 1;
+    obliv if (oexponent >= 0xfffc0001) {
+        obliv if (oexponent < 0xfffc8001) {
+            ooutput = 0x000005cc * oexponent + 0x00001bcc;
+        }
+    }
+    obliv if (oexponent >= 0xfffc8001) {
+        obliv if (oexponent < 0xfffd0001) {
+            ooutput = 0x00000946 * oexponent + 0x000027f6;
+        }
+    }
+    obliv if (oexponent >= 0xfffd0001) {
+        obliv if (oexponent < 0xfffd8001) {
+            ooutput = 0x00000e8e * oexponent + 0x000037d0;
+        }
+    }
+    obliv if (oexponent >= 0xfffd8001) {
+        obliv if (oexponent < 0xfffe0001) {
+            ooutput = 0x00001631 * oexponent + 0x00004ae6;
+        }
+    }
+    obliv if (oexponent >= 0xfffe0001) {
+        obliv if (oexponent < 0xfffe8001) {
+            ooutput = 0x0000205e * oexponent + 0x00005f41;
+        }
+    }
+    obliv if (oexponent >= 0xfffe8001) {
+        obliv if (oexponent < 0xffff0001) {
+            ooutput = 0x00002c4b * oexponent + 0x00007125;
+        }
+    }
+    obliv if (oexponent >= 0xffff0001) {
+        obliv if (oexponent < 0xffff8001) {
+            ooutput = 0x0000379a * oexponent + 0x00007c73;
+        }
+    }
+    obliv if (oexponent >= 0xffff8001) {
+        obliv if (oexponent < 0x00000000) {
+            ooutput = 0x00003eb2 * oexponent + 0x00008000;
+        }
+    }
+    obliv if (oexponent >= 0x00000000) {
+        obliv if (oexponent < 0x00008000) {
+            ooutput = 0x00003eb2 * oexponent + 0x00008000;
+        }
+    }
+    obliv if (oexponent >= 0x00008000) {
+        obliv if (oexponent < 0x00010000) {
+            ooutput = 0x0000379a * oexponent + 0x0000838c;
+        }
+    }
+    obliv if (oexponent >= 0x00010000) {
+        obliv if (oexponent < 0x00018000) {
+            ooutput = 0x00002c4b * oexponent + 0x00008eda;
+        }
+    }
+    obliv if (oexponent >= 0x00018000) {
+        obliv if (oexponent < 0x00020000) {
+            ooutput = 0x0000205e * oexponent + 0x0000a0be;
+        }
+    }
+    obliv if (oexponent >= 0x00020000) {
+        obliv if (oexponent < 0x00028000) {
+            ooutput = 0x00001631 * oexponent + 0x0000b519;
+        }
+    }
+    obliv if (oexponent >= 0x00028000) {
+        obliv if (oexponent < 0x00030000) {
+            ooutput = 0x00000e8e * oexponent + 0x0000c82f;
+        }
+    }
+    obliv if (oexponent >= 0x00030000) {
+        obliv if (oexponent < 0x00038000) {
+            ooutput = 0x00000946 * oexponent + 0x0000d809;
+        }
+    }
+    obliv if (oexponent >= 0x00038000) {
+        obliv if (oexponent < 0x00040000) {
+            ooutput = 0x000005cc * oexponent + 0x0000e433;
+        }
+    }
 
     revealOblivInt(&(io->output), ooutput, 0);
 }
