@@ -12,15 +12,21 @@ def logistic(x):
 
 def convert_to_fixed_point_hex(f):
     fp = np.int32(SCALE * f)
+    neg = False
     if fp < 0:
-        fp = 2**32 + 1 + fp
+        neg = True
+        fp = -fp
     output = hex(fp)[2:]
     if output[-1] == 'L':
         output = output[:-1]
-    return "0x" + (8 - len(output)) * '0' + output
+    output = "0x" + (8 - len(output)) * '0' + output
+    if neg:
+        return "-" + output
+    else:
+        return output
 
 lower_bound, upper_bound = (-4, +4)
-n = 16 # number of linear segments
+n = 8 # number of linear segments
 
 # generate evenly-spaced points on the function
 delta = (upper_bound - lower_bound) / float(n)
@@ -50,11 +56,13 @@ for i in range(len(points) - 1):
     intercept = p1[1] - (slope * p1[0])
     lines.append((p1[0], p2[0], slope, intercept))
 
+print(lines)
 # convert every value in the list on lines to strings of fixed-point hexadecimal
 new_lines = []
 for line in lines:
     new_lines.append(tuple(map(convert_to_fixed_point_hex, line)))
+print(new_lines)
 
 for line in new_lines:
-    print("obliv if (oexponent >= {}) {{\n    obliv if (oexponent < {}) {{\n        ooutput = {} * oexponent + {};\n    }}\n}}".format(line[0], line[1], line[2], line[3]))
+    print("obliv if (oexponent >= {}) {{\n    obliv if (oexponent < {}) {{\n        ooutput = fixed_mul({}, oexponent) + {};\n    }}\n}}".format(line[0], line[1], line[2], line[3]))
 
